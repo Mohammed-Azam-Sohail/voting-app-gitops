@@ -3,18 +3,32 @@ kind: Application
 metadata:
   name: voting-app-worker
   namespace: argocd
+
 spec:
   project: default
+
   source:
     repoURL: https://github.com/Mohammed-Azam-Sohail/voting-app-worker.git
     targetRevision: main
     path: k8s
+
   destination:
     server: https://kubernetes.default.svc
     namespace: voting-app
+
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: worker
+      namespace: voting-app
+      jsonPointers:
+        - /spec/replicas
+
   syncPolicy:
     automated:
-      selfHeal: true
       prune: false
+      selfHeal: true
+
     syncOptions:
       - CreateNamespace=false
+      - RespectIgnoreDifferences=true
